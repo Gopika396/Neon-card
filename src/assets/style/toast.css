@@ -1,0 +1,28 @@
+.toast {
+  position: fixed;
+  top: 22px;
+  left: 50%;
+  z-index: 50;
+  padding: 12px 22px;
+  font-size: 14px;
+  color: #fff;
+  background: #0b0c0e;
+  border: 1px solid var(--cyan);
+  border-radius: 8px;
+  box-shadow: 0 0 18px rgba(0, 246, 255, 0.35);
+  opacity: 0;
+  transform: translate(-50%, -160%);
+  transition:
+    transform 0.45s var(--ease),
+    opacity 0.3s;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.toast b {
+  color: var(--cyan);
+}

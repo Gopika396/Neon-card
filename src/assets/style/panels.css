@@ -1,0 +1,308 @@
+/* Only the view matching data-view is visible */
+.view {
+  display: none;
+  padding-top: 14px;
+  animation: rise 0.4s var(--ease);
+}
+
+.card[data-view="profile"] .view-profile,
+.card[data-view="chat"] .view-chat,
+.card[data-view="task"] .view-task,
+.card[data-view="work"] .view-work {
+  display: block;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- profile ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.stats strong {
+  display: block;
+  font-size: 14px;
+  color: var(--a);
+}
+
+.stats span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* XP bar fills up when the card opens */
+.xp {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.xp em {
+  font-style: normal;
+  color: var(--a);
+  font-weight: 700;
+}
+
+.xp-bar {
+  flex: 1;
+  height: 5px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+
+.xp-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--a), var(--b));
+  box-shadow: 0 0 10px var(--a);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.9s var(--ease) 0.25s;
+}
+
+.card.open .xp-bar i {
+  transform: scaleX(1);
+}
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.skills span {
+  padding: 3px 9px;
+  font-size: 10px;
+  color: var(--a);
+  background: color-mix(in srgb, var(--a) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--a) 40%, transparent);
+  border-radius: 99px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.row .btn {
+  flex: 1;
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  border: 0;
+  border-radius: 6px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.15s,
+    box-shadow 0.2s,
+    background 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, var(--a), color-mix(in srgb, var(--a) 70%, var(--b)));
+  color: #02181a;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--a) 45%, transparent);
+}
+
+.btn.primary.on {
+  background: transparent;
+  color: var(--a);
+  border: 1px solid var(--a);
+  box-shadow: none;
+}
+
+.btn.light {
+  background: #fff;
+  color: #111;
+}
+
+.btn.ghost {
+  width: 100%;
+  margin-top: 10px;
+  background: transparent;
+  color: var(--b);
+  border: 1px solid var(--b);
+}
+
+.btn.ghost:hover {
+  background: color-mix(in srgb, var(--b) 15%, transparent);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--b) 40%, transparent);
+}
+
+.btn.sm {
+  padding: 7px 12px;
+  font-size: 12px;
+}
+
+.btn.block {
+  width: 100%;
+  margin-top: 14px;
+}
+
+/* ---------- shared header row (chat + task) ---------- */
+.vhead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.mini {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--a);
+  flex: none;
+}
+
+.x {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.x:hover {
+  color: #fff;
+}
+
+/* ---------- chat ---------- */
+.msgs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 150px;
+  margin-top: 10px;
+  padding: 10px;
+  overflow-y: auto;
+  text-align: left;
+  background: rgba(8, 9, 12, 0.7);
+  border-radius: 8px;
+}
+
+.bubble {
+  max-width: 85%;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  border-radius: 8px;
+}
+
+.bubble.bot {
+  align-self: flex-start;
+  background: #26282d;
+  border-left: 2px solid var(--a);
+}
+
+.bubble.me {
+  align-self: flex-end;
+  background: color-mix(in srgb, var(--b) 30%, #1d1e21);
+}
+
+.line {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* ---------- inputs ---------- */
+input,
+select {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: var(--text);
+  background: #121315;
+  border: 1px solid #34373d;
+  border-radius: 6px;
+  outline: none;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--a);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--a) 35%, transparent);
+}
+
+.line input {
+  flex: 1;
+}
+
+/* ---------- task form ---------- */
+.field {
+  display: block;
+  margin-top: 12px;
+  text-align: left;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.field input,
+.field select {
+  margin-top: 5px;
+}
+
+/* ---------- working ---------- */
+.work-title {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.work-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.meter {
+  height: 6px;
+  margin: 16px 0 8px;
+  overflow: hidden;
+  background: #2a2c31;
+  border-radius: 4px;
+}
+
+.meter i {
+  display: block;
+  height: 100%;
+  width: calc(var(--p, 0) * 1%);
+  background: linear-gradient(90deg, var(--a), var(--b));
+  box-shadow: 0 0 10px var(--a);
+}
+
+.pct {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--a);
+}

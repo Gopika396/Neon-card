@@ -1,0 +1,365 @@
+/* Needed so the border angle can be animated */
+@property --angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* Fixed-size slot so cards growing never push their neighbours around */
+.slot {
+  width: 300px;
+  min-height: 450px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Wrapper that receives the 3D tilt + cursor position from JS */
+.tilt {
+  position: relative;
+  z-index: 1;
+  transform-style: preserve-3d;
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.18s ease-out;
+}
+
+.tilt.is-linked {
+  z-index: 2;
+}
+
+.tilt.is-open {
+  z-index: 3;
+}
+
+.card {
+  position: relative;
+  width: 220px;
+  padding: 60px 16px 18px;
+  border-radius: 18px;
+  text-align: center;
+  cursor: pointer;
+  background: linear-gradient(160deg, rgba(40, 42, 54, 0.9), rgba(17, 18, 24, 0.94));
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 0 34px color-mix(in srgb, var(--a) 10%, transparent);
+  transition:
+    width 0.5s var(--ease),
+    padding 0.5s var(--ease),
+    transform 0.45s var(--ease),
+    opacity 0.35s,
+    filter 0.35s,
+    box-shadow 0.4s;
+}
+
+/* Spinning neon border */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--angle),
+    var(--a),
+    transparent 28%,
+    var(--b) 52%,
+    transparent 78%,
+    var(--a)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: spin 6s linear infinite;
+}
+
+/* Spotlight that follows the cursor */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    240px circle at var(--mx, 50%) var(--my, 0%),
+    color-mix(in srgb, var(--a) 20%, transparent),
+    transparent 65%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.card:hover::after,
+.card.open::after {
+  opacity: 1;
+}
+
+.card.open {
+  width: 290px;
+  padding: 92px 20px 22px;
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 36px color-mix(in srgb, var(--b) 38%, transparent),
+    0 0 20px color-mix(in srgb, var(--a) 28%, transparent);
+}
+
+.card.open::before,
+.card.busy::before {
+  animation-duration: 2.6s;
+}
+
+.card.linked {
+  box-shadow:
+    0 22px 50px rgba(0, 0, 0, 0.65),
+    0 0 44px color-mix(in srgb, var(--a) 50%, transparent),
+    0 0 44px color-mix(in srgb, var(--b) 50%, transparent);
+}
+
+/* Cards that are not in focus step back */
+.card.dimmed {
+  opacity: 0.35;
+  transform: scale(0.92);
+  filter: saturate(0.4) blur(1px);
+}
+
+@keyframes spin {
+  to {
+    --angle: 360deg;
+  }
+}
+
+/* ---------- HUD corner brackets ---------- */
+.corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--a);
+  opacity: 0;
+  filter: drop-shadow(0 0 4px var(--a));
+  transition:
+    opacity 0.35s,
+    transform 0.45s var(--ease);
+}
+
+.corner.tl {
+  top: 8px;
+  left: 8px;
+  border-right: 0;
+  border-bottom: 0;
+  transform: translate(6px, 6px);
+}
+
+.corner.tr {
+  top: 8px;
+  right: 8px;
+  border-left: 0;
+  border-bottom: 0;
+  transform: translate(-6px, 6px);
+}
+
+.corner.bl {
+  bottom: 8px;
+  left: 8px;
+  border-right: 0;
+  border-top: 0;
+  transform: translate(6px, -6px);
+}
+
+.corner.br {
+  bottom: 8px;
+  right: 8px;
+  border-left: 0;
+  border-top: 0;
+  transform: translate(-6px, -6px);
+}
+
+.card.open .corner {
+  opacity: 0.85;
+  transform: none;
+}
+
+/* ---------- avatar ---------- */
+.avatar-wrap {
+  position: absolute;
+  top: -38px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 88px;
+  height: 88px;
+  z-index: 3;
+  animation: bob 3.4s ease-in-out var(--d, 0s) infinite;
+  transition:
+    top 0.5s var(--ease),
+    width 0.5s var(--ease),
+    height 0.5s var(--ease);
+}
+
+.card.open .avatar-wrap {
+  top: -68px;
+  width: 138px;
+  height: 138px;
+}
+
+/* Rotating glow ring around the avatar */
+.ring {
+  position: absolute;
+  inset: -7px;
+  border-radius: 22px;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--angle),
+    var(--a),
+    transparent 30%,
+    var(--b) 55%,
+    transparent 80%,
+    var(--a)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 6px var(--a));
+  animation: spin 3s linear infinite;
+}
+
+.avatar {
+  position: absolute;
+  inset: 0;
+  border-radius: 15px;
+  overflow: hidden;
+  background: #0a1220;
+  border: 1.5px solid color-mix(in srgb, var(--a) 75%, transparent);
+  box-shadow:
+    0 0 18px color-mix(in srgb, var(--a) 55%, transparent),
+    0 0 36px color-mix(in srgb, var(--b) 30%, transparent);
+}
+
+.avatar-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* ---------- text + badges ---------- */
+.name {
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--a);
+  text-shadow: 0 0 12px color-mix(in srgb, var(--a) 65%, transparent);
+}
+
+.role {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.badges {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.status,
+.lvl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-radius: 99px;
+}
+
+.status {
+  color: var(--green);
+  background: rgba(125, 255, 178, 0.08);
+  border: 1px solid rgba(125, 255, 178, 0.35);
+}
+
+.status i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.card.busy .status {
+  color: var(--amber);
+  background: rgba(255, 210, 63, 0.08);
+  border-color: rgba(255, 210, 63, 0.4);
+}
+
+.lvl {
+  color: var(--a);
+  background: color-mix(in srgb, var(--a) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--a) 40%, transparent);
+}
+
+/* ---------- expand / collapse ---------- */
+.panels {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 0.5s var(--ease),
+    opacity 0.35s;
+}
+
+.card.open .panels {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.panels-inner {
+  min-height: 0;
+  overflow: hidden;
+  cursor: default;
+  position: relative;
+  z-index: 2;
+}
+
+/* Glowing progress line along the bottom edge while a task runs */
+.edge {
+  position: absolute;
+  left: 16px;
+  bottom: -1px;
+  height: 3px;
+  width: calc((100% - 32px) * var(--p, 0) / 100);
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--a), var(--b));
+  box-shadow: 0 0 12px var(--a);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.card.busy .edge {
+  opacity: 1;
+}
